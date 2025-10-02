@@ -1,8 +1,24 @@
+import express from "express";
+
+import cors from "cors";
+ 
+
 const express = require("express");
 const db = require("./db");
+ 
 const app = express();
 const port = 3000;
 
+app.use(cors());
+app.use(cors({
+
+  origin: "*", // tu frontend
+
+  methods: ["GET", "POST", "PUT", "DELETE"],
+
+  allowedHeaders: ["Content-Type", "Authorization"]
+
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -120,4 +136,28 @@ app.delete("/api/clients/:id", async (req, res) => {
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Servidor de los mejores senatinos en http://localhost:${port}`);
+});
+
+app.get("/api/contacts", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM contacts"
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error("Error al obtener contactos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+app.get("/api/oportunities", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM oportunities"
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error("Error al obtener oportunidades:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
